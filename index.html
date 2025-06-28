@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BizVitals 360 – Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('08207dfc1b416c9ffe5ec416cc337773.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: #343c4b;
+    }
+    .container {
+      max-width: 700px;
+      margin: 80px auto;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    h1 {
+      font-family: 'Red Hat Display', sans-serif;
+      font-weight: 770;
+      font-size: 2.875rem;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.125rem;
+      line-height: 1.5;
+    }
+    .btn-group {
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .category-button {
+      background-color: #004f99;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 550;
+      transition: background 0.3s;
+    }
+    .category-button:hover {
+      background-color: #0066cc;
+    }
+    .logout {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: #dc3545;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout" onclick="logout()">Logout</button>
+  <div class="container">
+    <h1>Welcome to BizVitals 360</h1>
+    <p>Evaluate the health of your business across five key categories. Click a category to begin your assessment:</p>
+    <div class="btn-group">
+      <button class="category-button" onclick="startCategory('Financial Growth')">Financial Growth</button>
+      <button class="category-button" onclick="startCategory('Operational Efficiency')">Operational Efficiency</button>
+      <button class="category-button" onclick="startCategory('Market Position & Competitiveness')">Market Position & Competitiveness</button>
+      <button class="category-button" onclick="startCategory('Compliance & Risk Management')">Compliance & Risk Management</button>
+      <button class="category-button" onclick="startCategory('Business Sustainability & Growth')">Business Sustainability & Growth</button>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('bizLoggedIn') !== 'true') {
+      alert("Please log in first.");
+      window.location.href = 'auth.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('bizLoggedIn');
+      window.location.href = 'auth.html';
+    }
+
+    function startCategory(category) {
+      localStorage.setItem("startCategory", category);
+      window.location.href = "assessment.html";
+    }
+  </script>
+</body>
+</html>

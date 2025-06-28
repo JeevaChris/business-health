@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login / Signup – BizVitals 360</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('a421a4ab8afa4209a2160c3ce887d18b.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+    .auth-box {
+      background: rgba(255, 255, 255, 0.95);
+      max-width: 400px;
+      margin: 80px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #004f99;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #004f99;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0066cc;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 10px;
+      color: #004f99;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <h2 id="form-title">Login to BizVitals 360</h2>
+    <form id="auth-form">
+      <input type="text" id="name" placeholder="Full Name" style="display:none" />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" id="auth-button">Login</button>
+    </form>
+    <div class="toggle-link" onclick="toggleForm()">
+      Don't have an account? <span id="toggle-text">Sign Up</span>
+    </div>
+  </div>
+
+  <script>
+    let isSignup = false;
+
+    function toggleForm() {
+      isSignup = !isSignup;
+      document.getElementById('name').style.display = isSignup ? 'block' : 'none';
+      document.getElementById('form-title').innerText = isSignup ? 'Sign Up for BizVitals 360' : 'Login to BizVitals 360';
+      document.getElementById('auth-button').innerText = isSignup ? 'Sign Up' : 'Login';
+      document.getElementById('toggle-text').innerText = isSignup ? 'Login' : 'Sign Up';
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (isSignup) {
+        localStorage.setItem('bizUser', JSON.stringify({ name, email, password }));
+        alert('Signup successful! You can now login.');
+        toggleForm();
+      } else {
+        const user = JSON.parse(localStorage.getItem('bizUser'));
+        if (user && user.email === email && user.password === password) {
+          localStorage.setItem('bizLoggedIn', 'true');
+          window.location.href = 'index.html';
+        } else {
+          alert('Invalid email or password.');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

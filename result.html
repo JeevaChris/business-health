@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BizVitals 360 – Results</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+     background: url('1ab31f6b0a11297cc0c646cab482f4d5.jpg') no-repeat center center fixed;
+      background-size: cover;
+      padding: 30px;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #004080;
+    }
+    .result-box {
+      background: #fff;
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 800px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .category-score {
+      margin: 15px 0;
+      padding: 10px;
+      border-left: 5px solid #007bff;
+      background: #eef6ff;
+      border-radius: 5px;
+    }
+    .suggestion {
+      margin-top: 10px;
+      padding-left: 20px;
+      font-style: italic;
+      color: #555;
+    }
+    .score-green { border-color: #28a745; background: #e8f9ee; }
+    .score-yellow { border-color: #ffc107; background: #fff8e5; }
+    .score-red { border-color: #dc3545; background: #fbeaea; }
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: #dbeafe;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .home-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      background: #004080;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .home-btn:hover { background: #002f5f; }
+  </style>
+</head>
+<body>
+  <h1>BizVitals 360 – Assessment Results</h1>
+
+  <div class="result-box" id="resultsContainer">
+    <!-- Results will load here -->
+  </div>
+
+  <button class="home-btn" onclick="goHome()">Back to Home</button>
+
+  <script>
+    const categories = {
+      "Operational Efficiency": [
+        "Are SOPs documented and followed?",
+        "Are KPIs met consistently?",
+        "Is time spent on high-value tasks?",
+        "Are employees regularly trained?",
+        "Do you use ERP/CRM/dashboards?",
+        "Are suppliers regularly evaluated?",
+        "Is inventory managed efficiently?",
+        "Are purchases tracked proactively?",
+        "Do you have alternate vendors?",
+        "Is procurement cost-effective?",
+        "Are expenses reviewed regularly?",
+        "Are fixed/variable costs tracked?",
+        "Have top 3 cost drivers been reduced?"
+      ],
+      "Financial Growth": [
+        "Are you getting more sales or customers than you did last year?",
+        "Are you less dependent on a single customer or product to keep your business running?",
+        "Have your profit margins improved or stayed stable in the past 12 months?",
+        "Could your business stay profitable if revenue dropped by 10%?",
+        "Do you track revenue trends by product, service, or region?",
+        "Is your pricing strategy aligned with customer value and market position?",
+        "Are you regularly reviewing financial reports to assess profit trends?",
+        "Can you handle your regular business expenses without borrowing or delays?",
+        "Do you have some money saved to manage slow months or emergencies?",
+        "Do you know how much money is coming in and going out every month?"],
+      "Market Position & Competitiveness": [
+         "Do you regularly collect customer feedback (e.g., surveys, reviews)?",
+        "Do you track repeat customer rate or retention levels?",
+        "Are your customers likely to recommend your business to others?",
+        "Do you respond quickly and effectively to customer complaints?",
+        "Do you offer loyalty programs or value-added services to retain customers?",
+        "Do you know what makes your business better or different from your competitors?",
+        "Are your products or services harder to copy than others in the market?",
+        "Do you continuously improve based on competitor strategies?",
+        "Are your prices aligned with the value you provide to customers?",
+        "Do you innovate regularly to stay ahead of the competition?"
+      ],
+      "Compliance & Risk Management": [
+         "Do you comply with all relevant local, state, and national regulations?",
+        "Do you have proper documentation for all licenses and permits?",
+        "Is there a risk management plan in place?",
+        "Are you regularly reviewing compliance requirements?",
+        "Do you have a legal advisor or consultant?",
+        "Do you conduct internal audits?",
+        "Do you train employees on compliance and ethics?",
+        "Do you have fraud detection measures in place?",
+        "Are contracts and agreements reviewed by a legal professional?",
+        "Do you have a disaster recovery or business continuity plan?"
+      ],
+      "Business Sustainability & Growth": [
+         "Do you have a clear plan for how the business can grow in the next 1–3 years?",
+        "Can your current systems (team, tech, process) handle double the workload?",
+        "Are you exploring new markets, customer segments, or product lines?",
+        "Do you track and analyze business performance regularly?",
+        "Are funds or resources allocated for growth and expansion?",
+        "Have you introduced a new product, service, or process in the last 12 months?",
+        "Are you staying updated with market or technology trends in your industry?",
+        "Do you adapt quickly to changes in customer needs or market shifts?",
+        "Do you encourage team members to suggest improvements or innovations?",
+        "Are there systems in place to test and implement new ideas quickly?"
+      ]
+    };
+
+    const suggestions = {
+      "Operational Efficiency": "Streamline internal processes, implement SOPs, and ensure regular training and tracking of KPIs.",
+      "Financial Growth": "Improve profitability tracking, maintain healthy cash flow, and minimize unnecessary expenditures.",
+      "Market Position & Competitiveness": "Enhance customer experience, analyze competitors, and invest in branding and innovation.",
+      "Compliance & Risk Management": "Review legal obligations, improve risk handling policies, and establish internal control checks.",
+      "Business Sustainability & Growth": "Define a scalable vision, develop leadership, and foster a culture of innovation and resilience."
+    };
+
+    const answers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
+    const resultBox = document.getElementById("resultsContainer");
+    let totalScore = 0;
+    let categoryCount = 0;
+
+    for (const category in answers) {
+      const responseArray = answers[category];
+      if (!responseArray || responseArray.length === 0) continue;
+
+      const score = responseArray.reduce((acc, ans) => {
+        if (ans === "Yes") return acc + 1;
+        else if (ans === "In Process") return acc + 0.5;
+        return acc;
+      }, 0);
+
+      const maxScore = responseArray.length;
+      const percent = Math.round((score / maxScore) * 100);
+      totalScore += percent;
+      categoryCount++;
+
+      let levelClass = "score-green";
+      if (percent < 40) levelClass = "score-red";
+      else if (percent < 70) levelClass = "score-yellow";
+
+      const div = document.createElement("div");
+      div.className = `category-score ${levelClass}`;
+      div.innerHTML = `<strong>${category}</strong> - Score: ${percent}%`;
+
+      if (percent < 70) {
+        div.innerHTML += `<div class="suggestion">💡 Suggestion: ${suggestions[category]}</div>`;
+      }
+
+      resultBox.appendChild(div);
+    }
+
+    const avgScore = Math.round(totalScore / categoryCount);
+    const summary = document.createElement("div");
+    summary.className = "summary";
+
+    let healthMsg = "";
+    if (avgScore >= 80) {
+      healthMsg = `🌟 Your business is in excellent health (${avgScore}%)! Keep up the strong performance.`;
+    } else if (avgScore >= 60) {
+      healthMsg = `✅ Your business is stable (${avgScore}%) but has room for improvement. Focus on weak areas.`;
+    } else {
+      healthMsg = `⚠️ Your business may be at risk (${avgScore}%). Take urgent action based on suggestions.`;
+    }
+
+    summary.innerHTML = `<h2>Overall Business Health</h2><p>${healthMsg}</p>`;
+    resultBox.appendChild(summary);
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

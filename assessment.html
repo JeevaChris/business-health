@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BizVitals 360 – Assessment</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: url('4e981acb17d51e579b3dc3df0f0abe39.jpg') no-repeat center center fixed;
+      background-size: cover;
+      padding: 50px;
+      text-align: center;
+    }
+    .question-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    h2 { color: #004f99; }
+    #questionText {
+      font-size: 20px;
+      margin: 20px 0;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+      text-align: left;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      background-color: #00bcd4;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0199a6; }
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: #dc3545;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="question-box">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+
+    <h2 id="categoryTitle"></h2>
+    <p id="questionText"></p>
+    <form id="optionsForm">
+      <label><input type="radio" name="option" value="Yes"> Yes</label>
+      <label><input type="radio" name="option" value="No"> No</label>
+      <label><input type="radio" name="option" value="In Process"> In Process</label>
+      <label><input type="radio" name="option" value="Not Applicable"> Not Applicable</label>
+    </form>
+
+    <div class="button-row">
+      <button onclick="saveCategory()">Save</button>
+      <button onclick="finishLater()">Finish Later</button>
+      <button onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const categories = {
+      "Operational Efficiency": [
+        "Are SOPs documented and followed?",
+        "Are KPIs met consistently?",
+        "Is time spent on high-value tasks?",
+        "Are employees regularly trained?",
+        "Do you use ERP/CRM/dashboards?",
+        "Are suppliers regularly evaluated?",
+        "Is inventory managed efficiently?",
+        "Are purchases tracked proactively?",
+        "Do you have alternate vendors?",
+        "Is procurement cost-effective?",
+        "Are expenses reviewed regularly?",
+        "Are fixed/variable costs tracked?",
+        "Have top 3 cost drivers been reduced?"
+      ],
+      "Financial Growth": [
+        "Are you getting more sales or customers than you did last year?",
+        "Are you less dependent on a single customer or product to keep your business running?",
+        "Have your profit margins improved or stayed stable in the past 12 months?",
+        "Could your business stay profitable if revenue dropped by 10%?",
+        "Do you track revenue trends by product, service, or region?",
+        "Is your pricing strategy aligned with customer value and market position?",
+        "Are you regularly reviewing financial reports to assess profit trends?",
+        "Can you handle your regular business expenses without borrowing or delays?",
+        "Do you have some money saved to manage slow months or emergencies?",
+        "Do you know how much money is coming in and going out every month?"
+      ],
+      "Market Position & Competitiveness": [
+        "Do you regularly collect customer feedback (e.g., surveys, reviews)?",
+        "Do you track repeat customer rate or retention levels?",
+        "Are your customers likely to recommend your business to others?",
+        "Do you respond quickly and effectively to customer complaints?",
+        "Do you offer loyalty programs or value-added services to retain customers?",
+        "Do you know what makes your business better or different from your competitors?",
+        "Are your products or services harder to copy than others in the market?",
+        "Do you continuously improve based on competitor strategies?",
+        "Are your prices aligned with the value you provide to customers?",
+        "Do you innovate regularly to stay ahead of the competition?"
+      ],
+      "Compliance & Risk Management": [
+        "Do you comply with all relevant local, state, and national regulations?",
+        "Do you have proper documentation for all licenses and permits?",
+        "Is there a risk management plan in place?",
+        "Are you regularly reviewing compliance requirements?",
+        "Do you have a legal advisor or consultant?",
+        "Do you conduct internal audits?",
+        "Do you train employees on compliance and ethics?",
+        "Do you have fraud detection measures in place?",
+        "Are contracts and agreements reviewed by a legal professional?",
+        "Do you have a disaster recovery or business continuity plan?"
+      ],
+      "Business Sustainability & Growth": [
+        "Do you have a clear plan for how the business can grow in the next 1–3 years?",
+        "Can your current systems (team, tech, process) handle double the workload?",
+        "Are you exploring new markets, customer segments, or product lines?",
+        "Do you track and analyze business performance regularly?",
+        "Are funds or resources allocated for growth and expansion?",
+        "Have you introduced a new product, service, or process in the last 12 months?",
+        "Are you staying updated with market or technology trends in your industry?",
+        "Do you adapt quickly to changes in customer needs or market shifts?",
+        "Do you encourage team members to suggest improvements or innovations?",
+        "Are there systems in place to test and implement new ideas quickly?"
+      ]
+    };
+
+    const selectedCategory = localStorage.getItem("startCategory");
+    if (!selectedCategory || !categories[selectedCategory]) {
+      window.location.href = "index.html";
+    }
+
+    const questionSet = [...categories[selectedCategory]];
+    let currentIndex = 0;
+    const savedAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
+
+    if (savedAnswers[selectedCategory]) {
+      currentIndex = savedAnswers[selectedCategory].length;
+    }
+
+    function showQuestion() {
+      if (currentIndex >= questionSet.length) {
+        document.getElementById("questionText").innerText = "No more questions.";
+        return;
+      }
+
+      document.getElementById("categoryTitle").innerText = selectedCategory;
+      document.getElementById("questionText").innerText = `Q${currentIndex + 1}. ${questionSet[currentIndex]}`;
+      document.getElementById("optionsForm").reset();
+
+      const answer = savedAnswers[selectedCategory]?.[currentIndex];
+      if (answer) {
+        const input = document.querySelector(`input[name="option"][value="${answer}"]`);
+        if (input) input.checked = true;
+      }
+    }
+
+    function nextQuestion() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) return alert("Please select an option.");
+
+      const allAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
+      if (!allAnswers[selectedCategory]) allAnswers[selectedCategory] = [];
+      allAnswers[selectedCategory][currentIndex] = selected.value;
+      localStorage.setItem("assessmentAnswers", JSON.stringify(allAnswers));
+
+      currentIndex++;
+
+      if (currentIndex < questionSet.length) {
+        showQuestion();
+      } else {
+        // Mark category as completed
+        let completed = JSON.parse(localStorage.getItem("completedCategories") || "[]");
+        if (!completed.includes(selectedCategory)) {
+          completed.push(selectedCategory);
+          localStorage.setItem("completedCategories", JSON.stringify(completed));
+        }
+
+        if (completed.length >= 5) {
+          window.location.href = "result.html";
+        } else {
+          alert("Category completed! Please continue the next one.");
+          window.location.href = "index.html";
+        }
+      }
+    }
+
+    function saveCategory() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      const allAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
+      if (!allAnswers[selectedCategory]) allAnswers[selectedCategory] = [];
+      if (selected) {
+        allAnswers[selectedCategory][currentIndex] = selected.value;
+      }
+      localStorage.setItem("assessmentAnswers", JSON.stringify(allAnswers));
+      alert("Progress saved.");
+    }
+
+    function finishLater() {
+      saveCategory();
+      alert("You can continue this category later.");
+      window.location.href = "index.html";
+    }
+
+    function goBack() {
+      window.location.href = "index.html";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
