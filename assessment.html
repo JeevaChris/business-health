@@ -150,7 +150,26 @@
     if (!selectedCategory || !categories[selectedCategory]) {
       window.location.href = "index.html";
     }
+ const fullQuestionSet = categories[selectedCategory];
+    let questionSet = [...fullQuestionSet];
+    let currentIndex = 0;
 
+    if (selectedCategory === 'Financial Growth') {
+      document.getElementById("subCategoryButtons").style.display = 'block';
+      document.getElementById("financialButtons").style.display = 'block';
+    } else if (selectedCategory === 'Operational Efficiency') {
+      document.getElementById("subCategoryButtons").style.display = 'block';
+      document.getElementById("operationalButtons").style.display = 'block';
+    } else if (selectedCategory === 'Market Position & Competitiveness') {
+      document.getElementById("subCategoryButtons").style.display = 'block';
+      document.getElementById("marketButtons").style.display = 'block';
+    } else if (selectedCategory === 'Compliance & Risk Management') {
+      document.getElementById("subCategoryButtons").style.display = 'block';
+      document.getElementById("complianceButtons").style.display = 'block';
+    } else if (selectedCategory === 'Business Sustainablity & growth') {
+      document.getElementById("subCategoryButtons").style.display = 'block';
+      document.getElementById("complianceButtons").style.display = 'block';
+    }
     const questionSet = [...categories[selectedCategory]];
     let currentIndex = 0;
     const savedAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
