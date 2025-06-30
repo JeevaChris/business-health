@@ -6,8 +6,7 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: url('4e981acb17d51e579b3dc3df0f0abe39.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background: #f0f0f0;
       padding: 50px;
       text-align: center;
     }
@@ -16,7 +15,7 @@
       padding: 30px;
       border-radius: 15px;
       max-width: 800px;
-      margin: auto;=
+      margin: auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       position: relative;
     }
@@ -31,6 +30,7 @@
       text-align: left;
     }
     button {
+      margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
       border-radius: 8px;
@@ -40,28 +40,70 @@
       cursor: pointer;
     }
     button:hover { background-color: #0199a6; }
+
+    #subCategoryButtons button {
+      background: #007bff;
+      margin: 5px;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+    #subCategoryButtons button.active {
+      background-color: #0056b3;
+    }
+
     .back-btn {
       position: absolute;
-      top: 20px;
       right: 20px;
       padding: 10px 16px;
-      background: #dc3545;
       border: none;
       border-radius: 6px;
       color: white;
       cursor: pointer;
     }
-    .button-row {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
-    }
+
+    .btn-back { top: 20px; background: #dc3545; }
+    .btn-home { top: 70px; background: #28a745; }
+    .btn-result { top: 120px; background: #ffc107; color: black; }
   </style>
 </head>
 <body>
   <div class="question-box">
-    <button class="back-btn" onclick="goBack()">← Back</button>
+    <!-- Button Stack -->
+    <button class="back-btn btn-back" onclick="goBack()">← Back</button>
+    <button class="back-btn btn-home" onclick="goHome()">🏠 Home</button>
+    <button class="back-btn btn-result" onclick="goToResults()">📊 View Results</button>
+
+    <!-- Subcategory Filter -->
+    <div id="subCategoryButtons" style="margin-bottom: 20px; display: none;">
+      <div id="financialButtons" style="display: none;">
+        <button onclick="filterSubcategory('Revenue & Sales')">Revenue & Sales</button>
+        <button onclick="filterSubcategory('Profitability & Margins')">Profitability & Margins</button>
+        <button onclick="filterSubcategory('Cash Flow & Liquidity')">Cash Flow & Liquidity</button>
+        <button onclick="filterSubcategory('Expense Management')">Expense Management</button>
+      </div>
+      <div id="operationalButtons" style="display: none;">
+        <button onclick="filterSubcategory('Process')">Process</button>
+        <button onclick="filterSubcategory('Supply Chain')">Supply Chain</button>
+        <button onclick="filterSubcategory('Cost')">Cost</button>
+      </div>
+      <div id="marketButtons" style="display: none;">
+        <button onclick="filterSubcategory('Customer Satisfaction & Retention')">Customer Satisfaction & Retention</button>
+        <button onclick="filterSubcategory('Competitive Advantage')">Competitive Advantage</button>
+        <button onclick="filterSubcategory('Brand & Market Share')">Brand & Market Share</button>
+      </div>
+      <div id="complianceButtons" style="display: none;">
+        <button onclick="filterSubcategory('Regulatory Compliance')">Regulatory Compliance</button>
+        <button onclick="filterSubcategory('Fraud Prevention & Internal Controls')">Fraud Prevention & Internal Controls</button>
+        <button onclick="filterSubcategory('Legal & Contractual Risks')">Legal & Contractual Risks</button>
+      </div>
+      <div id="BusinessButtons" style="display: none;">
+        <button onclick="filterSubcategory('Scalability & Future Plans')">Scalability & Future Plans</button>
+        <button onclick="filterSubcategory('Innovation & Adaptability')">Innovation & Adaptability</button>
+        <button onclick="filterSubcategory('Employee & Leadership Strength')">Employee & Leadership Strength</button>
+      </div>
+    </div>
 
     <h2 id="categoryTitle"></h2>
     <p id="questionText"></p>
@@ -71,12 +113,7 @@
       <label><input type="radio" name="option" value="In Process"> In Process</label>
       <label><input type="radio" name="option" value="Not Applicable"> Not Applicable</label>
     </form>
-
-    <div class="button-row">
-      <button onclick="saveCategory()">Save</button>
-      <button onclick="finishLater()">Finish Later</button>
-      <button onclick="nextQuestion()">Next</button>
-    </div>
+    <button onclick="nextQuestion()">Next</button>
   </div>
 
   <script>
@@ -106,7 +143,27 @@
         "Are you regularly reviewing financial reports to assess profit trends?",
         "Can you handle your regular business expenses without borrowing or delays?",
         "Do you have some money saved to manage slow months or emergencies?",
-        "Do you know how much money is coming in and going out every month?"
+        "Do you know how much money is coming in and going out every month?",
+        "Do you consistently generate more cash than you spend each month?",
+        "Can you access funds quickly in case of a cash crunch?",
+        "Do you forecast your cash flow at least monthly?",
+        "Have you separated personal and business finances completely?",
+        "Do you avoid frequent reliance on credit for regular expenses?",
+        "Are most of your costs helping your business grow or run better?",
+        "Could you reduce spending quickly if needed, without hurting your business?",
+        "Do you track your spending against a monthly or quarterly budget?",
+        "Do you routinely review and optimize supplier and vendor contracts?",
+        "Have you identified your top 3 cost drivers in the business?",
+        "Do you run a break-even analysis when planning large expenses?",
+        "Do you review expense reports or accounts monthly?",
+        "Do your customers usually pay you on time?",
+        "Can you pay your suppliers and bills on time without waiting for new income?",
+        "Could your business keep running for a few months if sales dropped suddenly?",
+        "Are most of your invoices paid within 30 days?",
+        "Do you keep enough inventory to meet demand without overstocking?",
+        "Do you review how quickly you convert inventory into sales?",
+        "Are your payable and receivable cycles optimized to avoid cash gaps?",
+        "Do you monitor short-term assets and liabilities monthly?"
       ],
       "Market Position & Competitiveness": [
         "Do you regularly collect customer feedback (e.g., surveys, reviews)?",
@@ -118,21 +175,31 @@
         "Are your products or services harder to copy than others in the market?",
         "Do you continuously improve based on competitor strategies?",
         "Are your prices aligned with the value you provide to customers?",
-        "Do you innovate regularly to stay ahead of the competition?"
+        "Do you innovate regularly to stay ahead of the competition?",
+        "Are people aware of your brand in your target market?",
+        "Are your brand values clearly communicated in your messaging?",
+        "Have you gained more customers or market share in the past year?",
+        "Is your visual identity (logo, website, packaging) modern and professional?",
+        "Do you track your online presence (website traffic, social media, reviews)?"
       ],
       "Compliance & Risk Management": [
-        "Do you comply with all relevant local, state, and national regulations?",
-        "Do you have proper documentation for all licenses and permits?",
-        "Is there a risk management plan in place?",
-        "Are you regularly reviewing compliance requirements?",
-        "Do you have a legal advisor or consultant?",
-        "Do you conduct internal audits?",
-        "Do you train employees on compliance and ethics?",
-        "Do you have fraud detection measures in place?",
-        "Are contracts and agreements reviewed by a legal professional?",
-        "Do you have a disaster recovery or business continuity plan?"
+        "Do you comply with all applicable industry regulations?",
+        "Are internal audits conducted regularly?",
+        "Is your data protection and cybersecurity adequate?",
+        "Do you have updated contracts and legal documentation?",
+        "Do you maintain proper records and documentation?",
+        "Have you trained employees on compliance topics?",
+        "Do you have controls to prevent fraud?",
+        "Is there a whistleblower or reporting mechanism in place?",
+        "Do you review legal and regulatory changes affecting your business?",
+        "Is your insurance coverage reviewed and adequate?",
+        "Are there procedures in place for handling disputes or legal issues?",
+        "Do you track pending legal matters and compliance obligations?",
+        "Are vendor and partner contracts reviewed regularly?",
+        "Is compliance a part of leadership reviews and strategy?",
+        "Do you maintain licenses and certifications up to date?"
       ],
-      "Business Sustainability & Growth": [
+      "Business Sustainablity & growth": [
         "Do you have a clear plan for how the business can grow in the next 1–3 years?",
         "Can your current systems (team, tech, process) handle double the workload?",
         "Are you exploring new markets, customer segments, or product lines?",
@@ -142,7 +209,12 @@
         "Are you staying updated with market or technology trends in your industry?",
         "Do you adapt quickly to changes in customer needs or market shifts?",
         "Do you encourage team members to suggest improvements or innovations?",
-        "Are there systems in place to test and implement new ideas quickly?"
+        "Are there systems in place to test and implement new ideas quickly?",
+        "Do you have the right people in key roles to grow your business?",
+        "Are your employees motivated and engaged in their roles?",
+        "Is there a leadership team or succession plan to support business continuity?",
+        "Do you invest in training or upskilling your staff?",
+        "Are roles and responsibilities clearly defined and communicated?"
       ]
     };
 
@@ -169,8 +241,9 @@
       document.getElementById("complianceButtons").style.display = 'block';
     } else if (selectedCategory === 'Business Sustainablity & growth') {
       document.getElementById("subCategoryButtons").style.display = 'block';
-      document.getElementById("complianceButtons").style.display = 'block';
+      document.getElementById("BusinessButtons").style.display = 'block';
     }
+
     function showQuestion() {
       if (questionSet.length === 0) {
         document.getElementById("questionText").innerText = "No questions available.";
@@ -223,11 +296,19 @@
         'Employee & Leadership Strength': fullQuestionSet.slice(10, 15),
       };
       questionSet = map[sub] || [];
-      currentIndex = 0; 
+      currentIndex = 0;
       showQuestion();
     }
 
     function goBack() {
+      window.location.href = "index.html";
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    function goToResults() {
       window.location.href = "result.html";
     }
 
@@ -235,4 +316,3 @@
   </script>
 </body>
 </html>
-
