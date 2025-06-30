@@ -150,7 +150,8 @@
     if (!selectedCategory || !categories[selectedCategory]) {
       window.location.href = "index.html";
     }
- const fullQuestionSet = categories[selectedCategory];
+
+    const fullQuestionSet = categories[selectedCategory];
     let questionSet = [...fullQuestionSet];
     let currentIndex = 0;
 
@@ -170,76 +171,60 @@
       document.getElementById("subCategoryButtons").style.display = 'block';
       document.getElementById("complianceButtons").style.display = 'block';
     }
-    const questionSet = [...categories[selectedCategory]];
-    let currentIndex = 0;
-    const savedAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
-
-    if (savedAnswers[selectedCategory]) {
-      currentIndex = savedAnswers[selectedCategory].length;
-    }
-
     function showQuestion() {
-      if (currentIndex >= questionSet.length) {
-        document.getElementById("questionText").innerText = "No more questions.";
+      if (questionSet.length === 0) {
+        document.getElementById("questionText").innerText = "No questions available.";
         return;
       }
-
       document.getElementById("categoryTitle").innerText = selectedCategory;
       document.getElementById("questionText").innerText = `Q${currentIndex + 1}. ${questionSet[currentIndex]}`;
       document.getElementById("optionsForm").reset();
-
-      const answer = savedAnswers[selectedCategory]?.[currentIndex];
-      if (answer) {
-        const input = document.querySelector(`input[name="option"][value="${answer}"]`);
-        if (input) input.checked = true;
-      }
     }
 
     function nextQuestion() {
       const selected = document.querySelector('input[name="option"]:checked');
       if (!selected) return alert("Please select an option.");
 
+      const answer = selected.value;
       const allAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
       if (!allAnswers[selectedCategory]) allAnswers[selectedCategory] = [];
-      allAnswers[selectedCategory][currentIndex] = selected.value;
+      allAnswers[selectedCategory][currentIndex] = answer;
       localStorage.setItem("assessmentAnswers", JSON.stringify(allAnswers));
 
       currentIndex++;
-
       if (currentIndex < questionSet.length) {
         showQuestion();
       } else {
-        // Mark category as completed
-        let completed = JSON.parse(localStorage.getItem("completedCategories") || "[]");
-        if (!completed.includes(selectedCategory)) {
-          completed.push(selectedCategory);
-          localStorage.setItem("completedCategories", JSON.stringify(completed));
-        }
-
-        if (completed.length >= 5) {
-          window.location.href = "result.html";
-        } else {
-          alert("Category completed! Please continue the next one.");
-          window.location.href = "index.html";
-        }
+        window.location.href = "result.html";
       }
     }
 
-    function saveCategory() {
-      const selected = document.querySelector('input[name="option"]:checked');
-      const allAnswers = JSON.parse(localStorage.getItem("assessmentAnswers") || "{}");
-      if (!allAnswers[selectedCategory]) allAnswers[selectedCategory] = [];
-      if (selected) {
-        allAnswers[selectedCategory][currentIndex] = selected.value;
-      }
-      localStorage.setItem("assessmentAnswers", JSON.stringify(allAnswers));
-      alert("Progress saved.");
-    }
+    function filterSubcategory(sub) {
+      document.querySelectorAll("#subCategoryButtons button").forEach(btn => btn.classList.remove("active"));
+      const activeBtn = [...document.querySelectorAll("#subCategoryButtons button")].find(btn => btn.innerText === sub);
+      if (activeBtn) activeBtn.classList.add("active");
 
-    function finishLater() {
-      saveCategory();
-      alert("You can continue this category later.");
-      window.location.href = "index.html";
+      const map = {
+        'Revenue & Sales': fullQuestionSet.slice(0, 7),
+        'Profitability & Margins': fullQuestionSet.slice(7, 14),
+        'Cash Flow & Liquidity': fullQuestionSet.slice(14, 22),
+        'Expense Management': fullQuestionSet.slice(22, 30),
+        'Process': fullQuestionSet.slice(0, 5),
+        'Supply Chain': fullQuestionSet.slice(5, 10),
+        'Cost': fullQuestionSet.slice(10, 13),
+        'Customer Satisfaction & Retention': fullQuestionSet.slice(0, 5),
+        'Competitive Advantage': fullQuestionSet.slice(5, 10),
+        'Brand & Market Share': fullQuestionSet.slice(10, 15),
+        'Regulatory Compliance': fullQuestionSet.slice(0, 5),
+        'Fraud Prevention & Internal Controls': fullQuestionSet.slice(5, 10),
+        'Legal & Contractual Risks': fullQuestionSet.slice(10, 15),
+        'Scalability & Future Plans': fullQuestionSet.slice(0, 5),
+        'Innovation & Adaptability': fullQuestionSet.slice(5, 10),
+        'Employee & Leadership Strength': fullQuestionSet.slice(10, 15),
+      };
+      questionSet = map[sub] || [];
+      currentIndex = 0; 
+      showQuestion();
     }
 
     function goBack() {
@@ -250,3 +235,4 @@
   </script>
 </body>
 </html>
+
